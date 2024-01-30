@@ -4,11 +4,17 @@ I took the code part in the Medium tutorial to start developing and it will chan
 Article: https://medium.com/@truongbui95/jwt-authentication-and-authorization-with-spring-boot-3-and-spring-security-6-2f90f9337421
 
 Task:
-- Add swagger
-- Add sonar
-- check and remove the code unnecessary
-- Add api validate token and logout 
-- Add variable response body
-- Add time expire of the token
-- Improve roles and create new table
-- Configure profile uat to access mysql DB
+- [x] Add swagger
+- [ ] Add sonar
+- [ ] check and remove the code unnecessary
+- [ ] Configure profile uat to access mysql DB
+- [ ] Add api validate token and logout 
+- [ ] Add variable response body
+- [ ] Add time expire of the token
+- [ ] Improve roles and create new table
+
+
+
+# Tutorial links
+- [OpenAPI 3 Swagger](https://www.appsdeveloperblog.com/document-spring-rest-api-with-openapi-3swagger/)
+

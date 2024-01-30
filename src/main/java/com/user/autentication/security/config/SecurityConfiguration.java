@@ -28,10 +28,16 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfiguration {
     private static final String[] WEB_LINKS_PERMITTED = {
             "/api/v1/auth/**",
-            "/h2-console/**"
+            "/h2-console/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v3/api-docs/**"
     };
     private static final String[] IGNORE_WEB_LINKS = {
-            "/h2-console/**"
+            "/h2-console/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v3/api-docs/**"
     };
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserService userService;
