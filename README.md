@@ -6,7 +6,9 @@ Article: https://medium.com/@truongbui95/jwt-authentication-and-authorization-wi
 Task:
 - [x] Add swagger
 - [ ] Add sonar
-- [ ] check and remove the code unnecessary
+- [x] check and remove the code unnecessary
+- [ ] create the error message
+- [ ] Add the valid the username and email unique to get error message
 - [ ] Configure profile uat to access mysql DB
 - [ ] Add api validate token and logout 
 - [ ] Add variable response body
