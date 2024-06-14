@@ -1,4 +1,4 @@
-package com.user.autentication.security.dao.request;
+package com.user.autentication.security.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SigninRequest {
+public class SignUpRequest {
     private String username;
+    private String email;
     private String password;
 }

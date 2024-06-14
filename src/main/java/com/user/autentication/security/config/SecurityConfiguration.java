@@ -72,15 +72,4 @@ public class SecurityConfiguration {
         return config.getAuthenticationManager();
     }
 
-
-//
-//
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring().anyRequest().requestMatchers("/**.html", "/v2/api-docs",
-//                "/webjars/**",
-//                "/configuration/**",
-//                "/swagger-resources/**",
-//                "/h2-console/**");
-//    }
 }
