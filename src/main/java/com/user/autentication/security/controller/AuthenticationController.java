@@ -1,6 +1,7 @@
 package com.user.autentication.security.controller;
 
-import com.user.autentication.security.exception.UsernameHaveBeenCreated;
+import com.user.autentication.security.exception.UsernameHaveBeenCreatedException;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +21,9 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     @PostMapping("/signup")
-    public ResponseEntity<JwtAuthenticationResponse> signup(@RequestBody SignUpRequest request) throws UsernameHaveBeenCreated {
-        return ResponseEntity.ok(authenticationService.signup(request));
+    public ResponseEntity<String> signup(@RequestBody @Valid SignUpRequest request) throws UsernameHaveBeenCreatedException {
+        authenticationService.signup(request);
+        return ResponseEntity.ok("The "+request.getUsername()+" user was created!!!!!!!");
     }
 
     @PostMapping("/signin")
