@@ -1,7 +1,6 @@
-package com.user.autentication.security.handler.message;
+package com.user.autentication.security.exception.handler.message;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -24,4 +23,6 @@ public class ErrorExceptionMessageDTO {
     private List<ErrorValidMessageDTO> errorList;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ErrorValidMessageDTO error;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String message;
 }

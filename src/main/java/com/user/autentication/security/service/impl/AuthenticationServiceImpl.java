@@ -3,10 +3,16 @@ package com.user.autentication.security.service.impl;
 import com.user.autentication.security.entities.Role;
 import com.user.autentication.security.entities.User;
 import com.user.autentication.security.exception.EmailHaveBeenCreated;
+import com.user.autentication.security.exception.InvalidCredentialsException;
 import com.user.autentication.security.exception.UsernameHaveBeenCreatedException;
 import com.user.autentication.security.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +31,14 @@ import java.util.Optional;
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+
     @Override
     public void signup(SignUpRequest request) throws UsernameHaveBeenCreatedException {
 
@@ -48,11 +60,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponse signin(SigninRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Email or password."));
-        var jwt = jwtService.generateToken(user);
-        return JwtAuthenticationResponse.builder().token(jwt).build();
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtService.generateToken((UserDetails) authentication.getPrincipal());
+            return JwtAuthenticationResponse.builder().token(jwt).type("Bearer").build();
+        } catch (BadCredentialsException ex) {
+            throw new InvalidCredentialsException("Usuário ou senha inválidos.");
+        }
     }
 }
