@@ -1,11 +1,15 @@
 package com.user.autentication.security.service.impl;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import com.user.autentication.security.dto.response.StatusTokenResponse;
 import com.user.autentication.security.entities.Role;
 import com.user.autentication.security.entities.User;
-import com.user.autentication.security.exception.EmailHaveBeenCreated;
-import com.user.autentication.security.exception.InvalidCredentialsException;
-import com.user.autentication.security.exception.UsernameHaveBeenCreatedException;
+import com.user.autentication.security.exception.*;
 import com.user.autentication.security.repository.UserRepository;
+import com.user.autentication.security.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,12 +28,13 @@ import com.user.autentication.security.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
+    @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -37,6 +42,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private final UserService userService;
 
 
     @Override
@@ -47,7 +55,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if(userRepository.existsByEmail(request.getEmail())){
-            throw new EmailHaveBeenCreated(request.getEmail());
+            throw new EmailHaveBeenCreatedException(request.getEmail());
         }
 
         var user = User.builder()
@@ -74,4 +82,37 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new InvalidCredentialsException("Usuário ou senha inválidos.");
         }
     }
+
+    @Override
+    public StatusTokenResponse validToken(String token) {
+        try {
+            final String user;
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7); // Remove "Bearer " para obter o token real
+            } else {
+                throw new InvalidTokenException("Token inválido ou mal formado");
+            }
+
+            user = jwtService.extractUserName(token);
+            if (StringUtils.isNotEmpty(user)) {
+                UserDetails userDetails = userService.userDetailsService()
+                        .loadUserByUsername(user);
+                if (jwtService.isTokenValid(token, userDetails)) {
+                    return new StatusTokenResponse("Token válido. Usuário: " + user);
+                } else {
+                    throw new ExpiredTokenException("Token inválido ou expirado.");
+                }
+            } else {
+                throw new InvalidTokenException("Token inválido ou mal formado");
+            }
+        } catch (ExpiredJwtException ex) {
+            throw new ExpiredTokenException("Token expirado");
+        } catch (SignatureException ex) {
+            throw new InvalidTokenException("Assinatura do token inválida");
+        } catch (MalformedJwtException ex) {
+            throw new InvalidTokenException("Token mal formatado");
+        }
+    }
+
+
 }

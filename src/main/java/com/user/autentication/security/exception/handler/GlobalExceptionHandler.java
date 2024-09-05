@@ -1,12 +1,11 @@
 package com.user.autentication.security.exception.handler;
 
-import com.user.autentication.security.exception.EmailHaveBeenCreated;
-import com.user.autentication.security.exception.InvalidCredentialsException;
-import com.user.autentication.security.exception.UsernameHaveBeenCreatedException;
+import com.user.autentication.security.exception.*;
 import com.user.autentication.security.exception.handler.message.ErrorExceptionMessageDTO;
 import com.user.autentication.security.exception.handler.message.ErrorValidMessageDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,6 +18,22 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     ErrorExceptionMessageDTO errorExceptionMessageDTO;
+
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<ErrorExceptionMessageDTO> handleExpiredTokenException(ExpiredTokenException ex){
+        errorExceptionMessageDTO = new ErrorExceptionMessageDTO();
+        errorExceptionMessageDTO.setDateTime(LocalDateTime.now());
+        errorExceptionMessageDTO.setError(new ErrorValidMessageDTO("Token", ex.getMessage()));
+        return new ResponseEntity<>(errorExceptionMessageDTO, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorExceptionMessageDTO> handleInvalidTokenException(InvalidTokenException ex){
+        errorExceptionMessageDTO = new ErrorExceptionMessageDTO();
+        errorExceptionMessageDTO.setDateTime(LocalDateTime.now());
+        errorExceptionMessageDTO.setError(new ErrorValidMessageDTO("Token", ex.getMessage()));
+        return new ResponseEntity<>(errorExceptionMessageDTO, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ErrorExceptionMessageDTO> handleInvalidCredentialsException(InvalidCredentialsException ex) {
@@ -36,8 +51,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorExceptionMessageDTO, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(EmailHaveBeenCreated.class)
-    public ResponseEntity<ErrorExceptionMessageDTO> handleEmailAlreadyExistsException(EmailHaveBeenCreated ex) {
+    @ExceptionHandler(EmailHaveBeenCreatedException.class)
+    public ResponseEntity<ErrorExceptionMessageDTO> handleEmailAlreadyExistsException(EmailHaveBeenCreatedException ex) {
         errorExceptionMessageDTO = new ErrorExceptionMessageDTO();
         errorExceptionMessageDTO.setDateTime(LocalDateTime.now());
         List<ErrorValidMessageDTO> errors = new ArrayList<>();
@@ -59,4 +74,10 @@ public class GlobalExceptionHandler {
         errorExceptionMessageDTO.setErrorList(errors);
         return new ResponseEntity<>(errorExceptionMessageDTO, HttpStatus.BAD_REQUEST);
     }
+
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<String> handleGenericException(Exception ex) {
+//        return new ResponseEntity<>("Erro interno: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
+
 }

@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
     private static final String[] WEB_LINKS_PERMITTED = {
-            "/api/v1/auth/**",
+            "/api/auth/**",
             "/h2-console/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
