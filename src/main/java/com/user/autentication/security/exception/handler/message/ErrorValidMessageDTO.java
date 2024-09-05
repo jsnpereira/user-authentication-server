@@ -1,4 +1,4 @@
-package com.user.autentication.security.handler.message;
+package com.user.autentication.security.exception.handler.message;
 
 import lombok.*;
 

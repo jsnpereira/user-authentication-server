@@ -1,9 +1,10 @@
-package com.user.autentication.security.handler;
+package com.user.autentication.security.exception.handler;
 
 import com.user.autentication.security.exception.EmailHaveBeenCreated;
+import com.user.autentication.security.exception.InvalidCredentialsException;
 import com.user.autentication.security.exception.UsernameHaveBeenCreatedException;
-import com.user.autentication.security.handler.message.ErrorExceptionMessageDTO;
-import com.user.autentication.security.handler.message.ErrorValidMessageDTO;
+import com.user.autentication.security.exception.handler.message.ErrorExceptionMessageDTO;
+import com.user.autentication.security.exception.handler.message.ErrorValidMessageDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,9 +18,19 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    ErrorExceptionMessageDTO errorExceptionMessageDTO;
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorExceptionMessageDTO> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        errorExceptionMessageDTO = new ErrorExceptionMessageDTO();
+        errorExceptionMessageDTO.setDateTime(LocalDateTime.now());
+        errorExceptionMessageDTO.setMessage(ex.getMessage());
+        return new ResponseEntity<>(errorExceptionMessageDTO, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(UsernameHaveBeenCreatedException.class)
     public ResponseEntity<ErrorExceptionMessageDTO> handleUsernameAlreadyExistsException(UsernameHaveBeenCreatedException ex) {
-        ErrorExceptionMessageDTO errorExceptionMessageDTO = new ErrorExceptionMessageDTO();
+        errorExceptionMessageDTO = new ErrorExceptionMessageDTO();
         errorExceptionMessageDTO.setDateTime(LocalDateTime.now());
         errorExceptionMessageDTO.setError(new ErrorValidMessageDTO("username", ex.getMessage()));
         return new ResponseEntity<>(errorExceptionMessageDTO, HttpStatus.BAD_REQUEST);
@@ -27,7 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailHaveBeenCreated.class)
     public ResponseEntity<ErrorExceptionMessageDTO> handleEmailAlreadyExistsException(EmailHaveBeenCreated ex) {
-        ErrorExceptionMessageDTO errorExceptionMessageDTO = new ErrorExceptionMessageDTO();
+        errorExceptionMessageDTO = new ErrorExceptionMessageDTO();
         errorExceptionMessageDTO.setDateTime(LocalDateTime.now());
         List<ErrorValidMessageDTO> errors = new ArrayList<>();
         errors.add(new ErrorValidMessageDTO("email", ex.getMessage()));
@@ -37,7 +48,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorExceptionMessageDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        ErrorExceptionMessageDTO errorExceptionMessageDTO = new ErrorExceptionMessageDTO();
+        errorExceptionMessageDTO = new ErrorExceptionMessageDTO();
         errorExceptionMessageDTO.setDateTime(LocalDateTime.now());
         List<ErrorValidMessageDTO> errors = new ArrayList<>();
 
