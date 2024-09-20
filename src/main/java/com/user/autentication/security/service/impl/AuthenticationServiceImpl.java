@@ -113,6 +113,4 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new InvalidTokenException("Token mal formatado");
         }
     }
-
-
 }
